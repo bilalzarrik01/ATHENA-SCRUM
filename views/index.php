@@ -1,3 +1,48 @@
+<?php
+session_start();
+require_once __DIR__ . '/../config/db.php';
+
+$error = null;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+
+    // chercher user
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->execute([$email]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        $error = "Email not found";
+    } elseif (!password_verify($password, $user['password'])) {
+        $error = "Wrong password";
+    } else {
+        // login success
+        $_SESSION['user'] = [
+            'id'   => $user['id'],
+            'name' => $user['name'],
+            'role' => $user['role']
+        ];
+
+        // redirect 
+        if ($user['role'] === 'admin') {
+            header("Location: dashboardadmin.php");
+        } elseif ($user['role'] === 'project_manager') {
+            header("Location: dashboardchef.php ");
+        } else {
+            header("Location:dashboardmember.php");
+        }
+        exit;
+    }
+}
+?>
+
+
+
+ 
+ 
  <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,7 +96,7 @@
         </div>
 
         <!-- Submit Button -->
-        <button type="submit"
+        <button type="submit" onclick="window.location.href='dashboardchef.php'"
                 class="bg-gradient-to-r from-green-500 to-green-700 text-white px-4 py-3 rounded shadow hover:from-green-600 hover:to-green-800 transition font-semibold">
           Sign In
         </button>
@@ -60,7 +105,7 @@
       <!-- Signup Link -->
       <p class="mt-6 text-center text-gray-500 text-sm">
         Don't have an account?
-        <a href="#" class="text-green-600 hover:underline font-semibold">Sign Up</a>
+        <a href="signup.php" class="text-green-600 hover:underline font-semibold">Sign Up</a>
       </p>
     </div>
 
