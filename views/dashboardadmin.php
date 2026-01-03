@@ -25,6 +25,17 @@
       <a href="#" class="block hover:text-green-400">Reports</a>
       <a href="#" class="block hover:text-green-400">Settings</a>
     </nav>
+     <div class="border-t border-gray-700 pt-4">
+      <form action="logout.php" method="POST"
+            onsubmit="return confirm('Are you sure you want to logout?')">
+        <button
+          type="submit"
+          class="w-full text-left text-red-400 hover:text-red-600 font-semibold"
+        >
+          Logout
+        </button>
+      </form>
+    </div>
   </aside>
 
   <!-- MAIN CONTENT -->
