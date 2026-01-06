@@ -262,7 +262,7 @@ $recentAssignedTasks = array_slice($myTasks, 0, 5);
                 <div class="bg-white p-6 rounded-lg shadow">
                     <h2 class="text-xl font-bold mb-4">Quick Actions</h2>
                     <div class="space-y-3">
-                        <a href="create-task.php" class="block w-full bg-green-500 hover:bg-green-600 text-white text-center py-2 rounded">
+                        <a href="addtask.php" class="block w-full bg-green-500 hover:bg-green-600 text-white text-center py-2 rounded">
                             + Create New Task
                         </a>
                         <a href="update-status.php" class="block w-full bg-blue-500 hover:bg-blue-600 text-white text-center py-2 rounded">
