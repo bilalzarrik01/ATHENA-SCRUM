@@ -74,9 +74,9 @@ foreach ($tasks as $task) {
     </div>
     <nav class="space-y-4">
       <a href="#" class="block hover:text-green-400">Dashboard</a>
-      <a href="#projects" class="block hover:text-green-400">Projects</a>
-      <a href="#sprints" class="block hover:text-green-400">Sprints</a>
-      <a href="#tasks" class="block hover:text-green-400">Tasks</a>
+      <a href="my-projects.php" class="block hover:text-green-400">Projects</a>
+      <a href="my-sprints.php" class="block hover:text-green-400">Sprints</a>
+      <a href="my-tasks.php" class="block hover:text-green-400">Tasks</a>
       <a href="#team" class="block hover:text-green-400">Team</a>
     </nav>
     <div class="border-t border-gray-700 pt-4">
