@@ -63,10 +63,10 @@ $doneTasks = $taskRepo->countByStatus('done');
         <div class="container mx-auto mt-2">
             <div class="flex space-x-4">
                 <a href="dashboard-admin.php" class="px-4 py-2 bg-blue-700 rounded">Dashboard</a>
-                <a href="projects.php" class="px-4 py-2 hover:bg-blue-700 rounded">Projects</a>
+                <a href="my-projects.php" class="px-4 py-2 hover:bg-blue-700 rounded">Projects</a>
                 <a href="users.php" class="px-4 py-2 hover:bg-blue-700 rounded">Users</a>
-                <a href="sprints.php" class="px-4 py-2 hover:bg-blue-700 rounded">Sprints</a>
-                <a href="tasks.php" class="px-4 py-2 hover:bg-blue-700 rounded">Tasks</a>
+                <a href="my-spints.php" class="px-4 py-2 hover:bg-blue-700 rounded">Sprints</a>
+                <a href="my-tasks.php" class="px-4 py-2 hover:bg-blue-700 rounded">Tasks</a>
                 <a href="reports.php" class="px-4 py-2 hover:bg-blue-700 rounded">Reports</a>
             </div>
         </div>
@@ -78,8 +78,8 @@ $doneTasks = $taskRepo->countByStatus('done');
             <div class="bg-white p-6 rounded-lg shadow">
                 <div class="flex items-center">
                     <div class="p-3 bg-blue-100 rounded-lg">
-                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                         </svg>
                     </div>
                     <div class="ml-4">
@@ -191,7 +191,7 @@ $doneTasks = $taskRepo->countByStatus('done');
             <div class="bg-white p-6 rounded-lg shadow">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-bold">Active Sprints</h2>
-                    <a href="sprints.php" class="text-blue-600 hover:underline">View all</a>
+                    <a href="my-sprints.php" class="text-blue-600 hover:underline">View all</a>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full">
@@ -231,9 +231,9 @@ $doneTasks = $taskRepo->countByStatus('done');
                 datasets: [{
                     data: [<?= $todoTasks ?>, <?= $inProgressTasks ?>, <?= $doneTasks ?>],
                     backgroundColor: [
-                        '#F87171', // red
-                        '#FBBF24', // yellow
-                        '#10B981'  // green
+                        '#F87171', 
+                        '#FBBF24', 
+                        '#10B981'  
                     ]
                 }]
             },
