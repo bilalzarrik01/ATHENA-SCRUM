@@ -53,6 +53,10 @@ foreach ($tasks as $task) {
     if ($task->status === 'todo') $todoTasks++;
     if ($task->status === 'in_progress') $inProgressTasks++;
 }
+
+// Check for success/error messages
+$message = $_GET['message'] ?? '';
+$error = $_GET['error'] ?? '';
 ?>
 
 <!DOCTYPE html>
@@ -89,6 +93,19 @@ foreach ($tasks as $task) {
   <!-- Main content -->
   <main class="flex-1 p-6 overflow-y-auto">
     <h2 class="text-3xl font-semibold mb-6">Manager Dashboard</h2>
+
+    <!-- Messages -->
+    <?php if ($message): ?>
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        <?= htmlspecialchars($message) ?>
+    </div>
+    <?php endif; ?>
+
+    <?php if ($error): ?>
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <?= htmlspecialchars($error) ?>
+    </div>
+    <?php endif; ?>
 
     <!-- STATS -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -191,7 +208,7 @@ foreach ($tasks as $task) {
                      class="text-blue-600 hover:underline text-sm">Edit</a>
                   <a href="deleteproject.php?id=<?= $project->id ?>" 
                      class="text-red-600 hover:underline text-sm"
-                     onclick="return confirm('Delete this project?')">Delete</a>
+                     onclick="return confirm('Are you sure you want to delete this project? This action cannot be undone.')">Delete</a>
                 </div>
               </div>
             </div>

@@ -1,82 +1,67 @@
 <?php
+
 class Notification
 {
     public int $id;
     public int $user_id;
     public string $title;
     public string $message;
-    public string $type;
-    public bool $is_read;
     public string $created_at;
-    public ?string $read_at;
-    public ?string $time_ago;
-    
-    public function __construct(
-        int $id,
-        int $user_id,
-        string $title,
-        string $message,
-        string $type = 'info',
-        bool $is_read = false,
-        string $created_at = '',
-        ?string $read_at = null
-    ) {
-        $this->id = $id;
-        $this->user_id = $user_id;
-        $this->title = $title;
-        $this->message = $message;
-        $this->type = $type;
-        $this->is_read = $is_read;
-        $this->created_at = $created_at;
-        $this->read_at = $read_at;
-        $this->time_ago = $this->calculateTimeAgo();
-    }
-    
-    private function calculateTimeAgo(): string
+    public int $is_read;
+    public string $time_ago;
+
+    public function __construct(array $data)
     {
-        $now = new DateTime();
-        $created = new DateTime($this->created_at);
-        $interval = $now->diff($created);
-        
-        if ($interval->y > 0) return $interval->y . ' year' . ($interval->y > 1 ? 's' : '') . ' ago';
-        if ($interval->m > 0) return $interval->m . ' month' . ($interval->m > 1 ? 's' : '') . ' ago';
-        if ($interval->d > 0) {
-            if ($interval->d == 1) return 'Yesterday';
-            return $interval->d . ' days ago';
-        }
-        if ($interval->h > 0) return $interval->h . ' hour' . ($interval->h > 1 ? 's' : '') . ' ago';
-        if ($interval->i > 0) return $interval->i . ' minute' . ($interval->i > 1 ? 's' : '') . ' ago';
-        return 'Just now';
+        $this->id = (int)$data['id'];
+        $this->user_id = (int)$data['user_id'];
+        $this->title = $data['title'] ?? 'Notification';
+        $this->message = $data['message'];
+        $this->created_at = $data['created_at'];
+        $this->is_read = (int)$data['is_read'];
+        $this->time_ago = $this->formatTimeAgo($data['created_at']);
     }
-    
-    public function getIcon(): string
-    {
-        return match($this->type) {
-            'success' => '✅',
-            'warning' => '⚠️',
-            'error' => '❌',
-            'task' => '📝',
-            'project' => '📁',
-            'sprint' => '⚡',
-            default => 'ℹ️'
-        };
-    }
-    
-    public function getBadgeColor(): string
-    {
-        return match($this->type) {
-            'success' => 'bg-green-100 text-green-800',
-            'warning' => 'bg-yellow-100 text-yellow-800',
-            'error' => 'bg-red-100 text-red-800',
-            'task' => 'bg-blue-100 text-blue-800',
-            'project' => 'bg-purple-100 text-purple-800',
-            'sprint' => 'bg-indigo-100 text-indigo-800',
-            default => 'bg-gray-100 text-gray-800'
-        };
-    }
-    
+
     public function isUnread(): bool
     {
-        return !$this->is_read;
+        return $this->is_read == 0;
+    }
+
+    public function getIcon(): string
+    {
+        // Different icons based on title
+        $title = strtolower($this->title);
+        if (strpos($title, 'task') !== false) return '📝';
+        if (strpos($title, 'sprint') !== false) return '⚡';
+        if (strpos($title, 'project') !== false) return '📁';
+        if (strpos($title, 'urgent') !== false) return '🚨';
+        if (strpos($title, 'completed') !== false) return '✅';
+        if (strpos($title, 'assigned') !== false) return '👤';
+        return '🔔';
+    }
+
+    private function formatTimeAgo(string $datetime): string
+    {
+        $time = strtotime($datetime);
+        $diff = time() - $time;
+
+        if ($diff < 60) return 'Just now';
+        if ($diff < 3600) return floor($diff / 60) . ' min ago';
+        if ($diff < 86400) return floor($diff / 3600) . ' hours ago';
+        if ($diff < 604800) return floor($diff / 86400) . ' days ago';
+        if ($diff < 2592000) return floor($diff / 604800) . ' weeks ago';
+
+        return date('M d, Y', $time);
+    }
+
+    // Helper method to get CSS class for styling
+    public function getCssClass(): string
+    {
+        return $this->isUnread() ? 'notification-unread' : 'notification-read';
+    }
+    
+    // Get status text
+    public function getStatusText(): string
+    {
+        return $this->isUnread() ? 'Unread' : 'Read';
     }
 }

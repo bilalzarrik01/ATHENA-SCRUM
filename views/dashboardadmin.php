@@ -311,7 +311,7 @@ function updateUnreadCount() {
             <div class="bg-white p-6 rounded-lg shadow">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-bold">Recent Projects</h2>
-                    <a href="projects.php" class="text-blue-600 hover:underline">View all</a>
+                    <a href="my-projects.php" class="text-blue-600 hover:underline">View all</a>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full">

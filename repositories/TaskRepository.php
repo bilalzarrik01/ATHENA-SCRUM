@@ -283,4 +283,37 @@ public function getRecent(int $limit = 5): array {
         $tasks[] = $task;
     }
     return $tasks;
+}
+// TaskRepository.php - Add this method
+public function isTaskAssignedToUser(int $taskId, int $userId): bool {
+    $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM task_users WHERE task_id = ? AND user_id = ?");
+    $stmt->execute([$taskId, $userId]);
+    return (int)$stmt->fetchColumn() > 0;
+}
+
+// OR add this method to get user's tasks in a specific sprint
+public function getByUserAndSprint(int $userId, int $sprintId): array {
+    $stmt = $this->pdo->prepare("
+        SELECT t.* 
+        FROM tasks t
+        INNER JOIN task_users tu ON t.id = tu.task_id
+        WHERE tu.user_id = ? AND t.sprint_id = ?
+    ");
+    $stmt->execute([$userId, $sprintId]);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $tasks = [];
+    foreach ($rows as $row) {
+        $task = new Task();
+        $task->id = (int)$row['id'];
+        $task->sprint_id = (int)$row['sprint_id'];
+        $task->title = $row['title'];
+        $task->description = $row['description'];
+        $task->status = $row['status'];
+        $task->priority = $row['priority'];
+        $task->created_at = $row['created_at'];
+        
+        $tasks[] = $task;
+    }
+    return $tasks;
 }}

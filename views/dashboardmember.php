@@ -82,6 +82,7 @@ $errorMessage = $_GET['error'] ?? '';
                 <a href="my-projects.php" class="px-4 py-2 hover:bg-green-700 rounded">Projects</a>
                 <a href="my-sprints.php" class="px-4 py-2 hover:bg-green-700 rounded">Sprints</a>
                 <a href="profile.php" class="px-4 py-2 hover:bg-green-700 rounded">Profile</a>
+                
             </div>
         </div>
     </nav>
@@ -337,10 +338,12 @@ $errorMessage = $_GET['error'] ?? '';
                             </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
+
                     </div>
                 </div>
             </div>
         </div>
+        
     </div>
 </body>
 </html>

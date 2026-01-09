@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <img src="image.png" class="w-24 h-24 mb-6">
     <h2 class="text-white text-3xl font-bold mb-2">Welcome Back!</h2>
     <p class="text-green-100 text-center">
-      Manage your projects with ScrumATHENA
+      When worst comes to worst , squad comes first
     </p>
   </div>
 

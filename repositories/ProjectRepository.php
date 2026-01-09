@@ -101,11 +101,26 @@ class ProjectRepository {
         ]);
     }
 
-    // Delete project
-    public function delete(int $id): bool {
+  
+public function delete(int $id): bool {
+    try {
+        // Disable foreign key checks (MySQL specific)
+        $this->pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
+        
+        // Delete the project
         $stmt = $this->pdo->prepare("DELETE FROM projects WHERE id = ?");
-        return $stmt->execute([$id]);
+        $result = $stmt->execute([$id]);
+        
+        // Re-enable foreign key checks
+        $this->pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
+        
+        return $result;
+    } catch (Exception $e) {
+        // Re-enable foreign key checks even if error occurs
+        $this->pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
+        return false;
     }
+}
 
     // COUNT METHODS - Add these
     public function countAll(): int {
