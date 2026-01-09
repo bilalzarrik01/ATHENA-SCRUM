@@ -3,6 +3,7 @@ session_start();
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../repositories/ProjectRepository.php';
 require_once __DIR__ . '/../repositories/SprintRepository.php';
+require_once __DIR__ . '/../repositories/NotificationRepository.php';
 
 // Check if user is manager
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'project_manager') {
@@ -35,6 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'end_date' => $end_date
         ]);
         $message = "Sprint created successfully!";
+        $notificationRepo = new NotificationRepository($pdo);
+
+$notificationRepo->create(
+    $_SESSION['user']['id'],
+    "New sprint '$name' has been created"
+);
+
         
         // Redirect after successful creation
         header("Location: dashboardchef.php");

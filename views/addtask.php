@@ -5,6 +5,7 @@ require_once __DIR__ . '/../repositories/ProjectRepository.php';
 require_once __DIR__ . '/../repositories/SprintRepository.php';
 require_once __DIR__ . '/../repositories/TaskRepository.php';
 require_once __DIR__ . '/../repositories/UserRepository.php';
+require_once __DIR__ . '/../repositories/NotificationRepository.php';
 
 // Check if user is manager
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'project_manager') {
@@ -55,6 +56,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Create task
             $task = $taskRepo->create($taskData);
+            $notificationRepo = new NotificationRepository($pdo);
+
+// notify creator
+$notificationRepo->create(
+    $_SESSION['user']['id'],
+    "Task '$title' has been created"
+);
+
+// notify assigned member (if exists)
+if (!empty($assigned_to)) {
+    $notificationRepo->create(
+        (int)$assigned_to,
+        "You have been assigned to task: $title"
+    );
+}
+
             
             // Redirect after successful creation
             header("Location: dashboardchef.php?success=Task+created+successfully");

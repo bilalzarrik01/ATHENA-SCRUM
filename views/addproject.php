@@ -2,6 +2,7 @@
 session_start();
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../repositories/ProjectRepository.php';
+require_once __DIR__ . '/../repositories/NotificationRepository.php';
 
 // Check if user is admin or manager
 if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], ['admin', 'project_manager'])) {
@@ -26,6 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'status' => 'active'
         ]);
         $message = "Project created successfully!";
+        $notificationRepo = new NotificationRepository($pdo);
+
+$notificationRepo->create(
+    $_SESSION['user']['id'],
+    "You created a new project: $title"
+);
+
         
         // Redirect based on role
         if ($_SESSION['user']['role'] === 'admin') {

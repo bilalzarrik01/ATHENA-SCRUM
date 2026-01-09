@@ -1,5 +1,9 @@
 <?php
 session_start();
+// Load notification helper
+require_once __DIR__ . '/../utils/notifications.php';
+$unreadCount = NotificationHelper::getCurrentUserUnreadCount();
+$recentNotifications = NotificationHelper::getCurrentUserNotifications(5);
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../repositories/ProjectRepository.php';
 require_once __DIR__ . '/../repositories/SprintRepository.php';
@@ -70,6 +74,150 @@ $doneTasks = $taskRepo->countByStatus('done');
                 <a href="reports.php" class="px-4 py-2 hover:bg-blue-700 rounded">Reports</a>
             </div>
         </div>
+        <!-- Notification Bell -->
+<div class="relative ml-4">
+    <button id="notificationBell" class="relative p-2 text-gray-600 hover:text-gray-900 focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+        </svg>
+        <?php if ($unreadCount > 0): ?>
+            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">
+                <?= $unreadCount ?>
+            </span>
+        <?php endif; ?>
+    </button>
+    
+    <!-- Notification Dropdown -->
+    <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 border border-gray-200">
+        <div class="p-4 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-gray-800">Notifications</h3>
+                <?php if ($unreadCount > 0): ?>
+                    <button onclick="markAllNotificationsRead()" class="text-sm text-blue-600 hover:text-blue-800">
+                        Mark all as read
+                    </button>
+                <?php endif; ?>
+            </div>
+        </div>
+        
+        <div class="max-h-96 overflow-y-auto">
+            <?php if (empty($recentNotifications)): ?>
+                <div class="p-4 text-center text-gray-500">
+                    No notifications
+                </div>
+            <?php else: ?>
+                <?php foreach ($recentNotifications as $notification): ?>
+                    <div class="p-4 border-b border-gray-100 hover:bg-gray-50 notification-item <?= $notification->isUnread() ? 'bg-blue-50' : '' ?>" 
+                         data-id="<?= $notification->id ?>"
+                         onclick="markNotificationAsRead(<?= $notification->id ?>, this)">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mr-3">
+                                <span class="text-lg"><?= $notification->getIcon() ?></span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-900">
+                                    <?= htmlspecialchars($notification->title) ?>
+                                </p>
+                                <p class="text-sm text-gray-600 mt-1">
+                                    <?= htmlspecialchars($notification->message) ?>
+                                </p>
+                                <div class="flex justify-between items-center mt-2">
+                                    <span class="text-xs text-gray-500">
+                                        <?= $notification->time_ago ?>
+                                    </span>
+                                    <?php if ($notification->isUnread()): ?>
+                                        <span class="inline-block w-2 h-2 bg-blue-500 rounded-full"></span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+        
+        <div class="p-3 border-t border-gray-200 text-center">
+            <a href="notifications.php" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                View all notifications
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+// Notification Bell functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const bell = document.getElementById('notificationBell');
+    const dropdown = document.getElementById('notificationDropdown');
+    
+    // Toggle dropdown
+    if (bell) {
+        bell.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('hidden');
+        });
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (dropdown && bell && !dropdown.contains(e.target) && !bell.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+});
+
+function markNotificationAsRead(notificationId, element) {
+    fetch('ajax/mark-notification-read.php?id=' + notificationId)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                element.classList.remove('bg-blue-50');
+                const dot = element.querySelector('.bg-blue-500');
+                if (dot) dot.remove();
+                
+                // Update unread count
+                updateUnreadCount();
+            }
+        });
+}
+
+function markAllNotificationsRead() {
+    fetch('ajax/mark-all-notifications-read.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove unread styling from all notifications
+                document.querySelectorAll('.notification-item').forEach(item => {
+                    item.classList.remove('bg-blue-50');
+                    const dot = item.querySelector('.bg-blue-500');
+                    if (dot) dot.remove();
+                });
+                
+                // Update unread count
+                updateUnreadCount();
+                
+                // Hide the "Mark all as read" button
+                const markAllBtn = document.querySelector('button[onclick="markAllNotificationsRead()"]');
+                if (markAllBtn) markAllBtn.remove();
+            }
+        });
+}
+
+function updateUnreadCount() {
+    // This would need to fetch the new count from server
+    // For now, just decrease the count by 1 for each read
+    const badge = document.querySelector('#notificationBell .bg-red-500');
+    if (badge) {
+        let count = parseInt(badge.textContent) - 1;
+        if (count <= 0) {
+            badge.remove();
+        } else {
+            badge.textContent = count;
+        }
+    }
+}
+</script>
     </nav>
 
     <div class="container mx-auto p-6">
